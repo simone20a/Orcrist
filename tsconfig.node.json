@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "strict": true,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "composite": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/main/**/*.ts",
+    "src/preload/**/*.ts",
+    "src/language/**/*.ts",
+    "src/shared/**/*.ts",
+    // geometria pura, senza DOM: la prova a secco la esercita da Node
+    "src/renderer/graph/**/*.ts",
+    "scripts/**/*.ts",
+    "electron.vite.config.ts"
+  ]
+}

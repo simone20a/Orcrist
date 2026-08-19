@@ -1,0 +1,11 @@
+{
+  "projectName": "Orcrist",
+  "languages": [
+    {
+      "id": "orcrist",
+      "grammar": "../metamodel/orcrist.langium",
+      "fileExtensions": [".orc"]
+    }
+  ],
+  "out": "src/language/generated"
+}

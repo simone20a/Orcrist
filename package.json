@@ -1,0 +1,72 @@
+{
+  "name": "orcrist",
+  "version": "0.1.0",
+  "description": "Orcrist — coding agent driven by state machines written in the Orcrist DSL (.orc)",
+  "main": "out/main/index.js",
+  "author": "Simo",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "langium:generate": "langium generate",
+    "dev": "npm run langium:generate && electron-vite dev",
+    "build": "npm run langium:generate && tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "check:examples": "tsx scripts/check-examples.ts",
+    "dry-run": "tsx scripts/dry-run.ts",
+    "test": "npm run typecheck && npm run check:examples && npm run conformance && npm run dry-run",
+    "dist": "npm run build && electron-builder",
+    "conformance": "tsx scripts/conformance.ts",
+    "icon": "python3 scripts/make-icon.py"
+  },
+  "dependencies": {
+    "langium": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "^43.4.1",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "langium-cli": "^4.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.6"
+  },
+  "build": {
+    "appId": "dev.orcrist.app",
+    "productName": "Orcrist",
+    "files": [
+      "out/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.icns"
+    },
+    "fileAssociations": [
+      {
+        "ext": "orc",
+        "name": "Orcrist model",
+        "description": "Orcrist state machine",
+        "role": "Editor",
+        "icon": "build/icon"
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Development"
+    }
+  }
+}
