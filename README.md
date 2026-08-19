@@ -1,10 +1,11 @@
 <p align="center">
-  <img src="build/icon.png" alt="Orcrist dwarf icon" width="112" />
+  <img src="build/icon.png" alt="Orcrist dwarf icon" width="112" align="middle" />
+  &nbsp;&nbsp;
+  <img src="build/orcrist-wordmark.svg" alt="Orcrist" width="246" align="middle" />
 </p>
 
-<h1 align="center">Orcrist Coding Agent</h1>
 
-<p align="center">A state-machine-driven coding agent with a focused graphical interface.</p>
+<p align="center">A state-machine-driven coding agent with a graphical interface.</p>
 
 Orcrist replaces the usual prompt box with the state machine that defines the
 agent's behaviour. Models are written in the **Orcrist DSL** (`.orc`), parsed
@@ -110,4 +111,3 @@ deterministic values. Orcrist makes this distinction visible throughout the
 interface but cannot remove it. `run_command` is disabled by default for the
 same reason. Web search reports what the agent read, not necessarily what is
 true.
-
