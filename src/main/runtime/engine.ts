@@ -626,32 +626,33 @@ export class Engine {
     const lines: string[] = [];
 
     lines.push(
-      `Sei l'agente di codice di Orcrist. La tua condotta e' descritta da una macchina a stati chiamata '${m.name}';`,
-      `in questo momento stai eseguendo lo stato '${state.name}' (visita ${this.visits.get(state.name) ?? 1}).`,
+      `You are Orcrist's coding agent. Your behaviour is defined by a state machine named '${m.name}';`,
+      `you are currently executing state '${state.name}' (visit ${this.visits.get(state.name) ?? 1}).`,
+      'Always communicate in English unless the user explicitly requests another language.',
       '',
       `Workspace: ${this.o.sandbox.root}`,
-      "Puoi leggere e modificare solo file dentro questa cartella. Ogni percorso fuori dal workspace viene rifiutato.",
+      'You may read and modify files only inside this workspace. Any path outside it is rejected.',
       '',
-      'Struttura attuale del workspace:',
-      await this.o.sandbox.tree(120).catch(() => '(non leggibile)'),
+      'Current workspace structure:',
+      await this.o.sandbox.tree(120).catch(() => '(unreadable)'),
       '',
     );
 
     if (this.o.ask) {
       lines.push(
-        "C'e' una persona che sta guardando l'esecuzione, e con 'ask_user' puoi rivolgerle una domanda:",
-        'la macchina resta ferma finche\' non risponde. Usalo per le decisioni che non spettano a te e per',
-        'le informazioni che non trovi altrove — non per chiedere il permesso di proseguire. Quando le',
-        'alternative sono note, proponile invece di lasciare la domanda aperta.',
+        "A person is observing this run, and you can ask them a question with 'ask_user':",
+        'the machine pauses until they answer. Use it for decisions you cannot make on their behalf',
+        'and information unavailable elsewhere—not to ask permission to continue. When alternatives',
+        'are known, offer them rather than leaving the question open-ended.',
         '',
       );
     }
 
     if (this.o.web) {
       lines.push(
-        "Hai accesso al web con 'web_search' e 'fetch_url'. Usali quando la risposta non e' nel workspace",
-        'e quando conta che sia aggiornata — versioni di librerie, messaggi di errore, documentazione.',
-        'Cita l\'URL da cui hai preso un\'informazione quando la riporti.',
+        "You have web access through 'web_search' and 'fetch_url'. Use it when the answer is not in the",
+        'workspace and freshness matters, such as for library versions, error messages, or documentation.',
+        'Cite the URL from which you obtained information when you report it.',
         '',
       );
     }
@@ -669,45 +670,45 @@ export class Engine {
         // proprio dove il taglio avviene.
         const shown =
           value.length > INLINE_VALUE_CHARS
-            ? `${value.slice(0, INLINE_VALUE_CHARS).replace(/\n/g, ' ')}…  [abbreviata: ${value.length} caratteri in tutto, usa read_location per leggerla intera]`
+            ? `${value.slice(0, INLINE_VALUE_CHARS).replace(/\n/g, ' ')}…  [truncated: ${value.length} characters total; use read_location to read the full value]`
             : value.replace(/\n/g, ' ');
         return `  ${loc.name}: ${typeToString(loc.type)} = ${shown}`;
       };
 
       lines.push(
-        'STATO GLOBALE DELLA MACCHINA',
+        'MACHINE GLOBAL STATE',
         '',
-        `Puoi LEGGERE tutte e ${m.locations.length} le locazioni, senza eccezioni: quelle qui sotto sono`,
-        "tutte, con il valore che hanno adesso. Il tool 'read_location' ne restituisce una per intero,",
-        'e funziona su qualunque locazione — anche su quelle che non puoi scrivere.',
+        `You may READ all ${m.locations.length} locations without exception. They are all listed below,`,
+        "with their current values. The 'read_location' tool returns any location in full,",
+        'including locations you cannot write.',
         '',
       );
 
       if (writable.length) {
         lines.push(
-          `Puoi anche SCRIVERE queste ${writable.length} (marcate 'agent' nel modello):`,
+          `You may also WRITE these ${writable.length} locations (marked 'agent' in the model):`,
           ...writable.map(describe),
           '',
-          `Le scrivi solo chiamando il tool '${REPORT_TOOL}', e solo quelle che questo stato dichiara in`,
-          "'writes'. Non esiste nessun altro modo: non puoi scriverle con un file, con un comando, ne'",
-          'annunciandolo nel testo della risposta.',
+          `Write them only by calling the '${REPORT_TOOL}' tool, and only those declared by this state in`,
+          "'writes'. There is no other route: you cannot write them through a file, a command, or",
+          'by stating a value in response text.',
           '',
         );
       } else {
         lines.push(
-          "Non puoi scrivere nessuna locazione: questa macchina non ne dichiara di marcate 'agent'.",
+          "You cannot write any locations: this machine declares no locations marked 'agent'.",
           '',
         );
       }
 
       if (readOnly.length) {
         lines.push(
-          `Queste ${readOnly.length} le puoi leggere ma non scrivere:`,
+          `You may read, but not write, these ${readOnly.length} locations:`,
           ...readOnly.map(describe),
           '',
-          "Le calcola il runtime dalle assegnazioni 'set' del modello. Leggile pure e tienine conto —",
-          'spesso sono contatori che dicono a che punto e\' la macchina — ma qualunque tentativo di',
-          'modificarle viene rifiutato e registrato.',
+          "The runtime calculates them from the model's 'set' assignments. You may read and use them—",
+          'they are often counters describing the machine progress—but any attempt to modify them',
+          'is rejected and recorded.',
           '',
         );
       }
@@ -721,31 +722,31 @@ export class Engine {
         })
         .join('\n');
       lines.push(
-        'COSA DEVE PRODURRE QUESTO STATO',
+        'WHAT THIS STATE MUST PRODUCE',
         '',
         detail,
         '',
-        `Fai il lavoro con i tool, poi chiama '${REPORT_TOOL}' una volta sola con tutti questi campi e`,
-        'nessun altro. I valori finiscono nello stato globale e li leggono le guardie che decidono dove',
-        'va la macchina: riporta quello che risulta davvero dal lavoro fatto, non quello che ti sembra',
-        "desiderabile. Se il lavoro non e' riuscito, dillo nei valori — un ramo di recupero esiste apposta.",
+        `Do the work with the tools, then call '${REPORT_TOOL}' exactly once with all these fields and`,
+        'no others. The values enter global state and are read by the guards that decide where the',
+        'machine goes next: report what actually resulted from the work, not what seems desirable.',
+        'If the work did not succeed, report that in the values; a recovery branch exists for that purpose.',
       );
     } else {
       lines.push(
-        'COSA DEVE PRODURRE QUESTO STATO',
+        'WHAT THIS STATE MUST PRODUCE',
         '',
-        "Niente: questo stato non dichiara 'writes' e non puoi scrivere nessuna locazione da qui.",
-        'Esegui il compito con i tool e chiudi con un breve resoconto.',
+        "Nothing: this state declares no 'writes', and you cannot write any locations from here.",
+        'Complete the task with the tools and finish with a brief report.',
       );
     }
 
     const exits = [
-      ...state.transitions.map((t) => `  se ${t.source} -> ${t.target}`),
-      ...(state.limit ? [`  oltre ${state.limit.maxVisits} visite -> ${state.limit.onExceeded}`] : []),
-      ...(state.fallback ? [`  altrimenti -> ${state.fallback}`] : []),
+      ...state.transitions.map((t) => `  if ${t.source} -> ${t.target}`),
+      ...(state.limit ? [`  over ${state.limit.maxVisits} visits -> ${state.limit.onExceeded}`] : []),
+      ...(state.fallback ? [`  otherwise -> ${state.fallback}`] : []),
     ];
     if (exits.length) {
-      lines.push('', 'Uscite di questo stato, valutate in ordine dopo il tuo turno:', ...exits);
+      lines.push('', 'State exits, evaluated in order after your turn:', ...exits);
     }
 
     return lines.join('\n');

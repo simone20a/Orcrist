@@ -36,7 +36,7 @@ function fakeProvider(script: Script, opts: { useTools?: boolean } = {}): LlmPro
   const visits = new Map<string, number>();
   return {
     async chat(req: ChatRequest): Promise<ChatResponse> {
-      const state = /stato '([^']+)'/.exec(req.system)?.[1] ?? '?';
+      const state = /state '([^']+)'/.exec(req.system)?.[1] ?? '?';
       const alreadyCalledTool = req.messages.some((m) => m.role === 'tool');
       const reportSpec = req.tools.find((t) => t.name === 'report');
 
@@ -71,7 +71,7 @@ function toolCallingProvider(tool: string, input: Record<string, unknown>, scrip
   const done = new Set<string>();
   return {
     async chat(req: ChatRequest): Promise<ChatResponse> {
-      const state = /stato '([^']+)'/.exec(req.system)?.[1] ?? '?';
+      const state = /state '([^']+)'/.exec(req.system)?.[1] ?? '?';
       if (!done.has(state) && req.tools.some((t) => t.name === tool)) {
         done.add(state);
         return { text: '', toolCalls: [{ id: 'c1', name: tool, input }], stopReason: 'tool_use' };
@@ -683,20 +683,20 @@ machine Istruzioni {
   await engine.run('sys');
   rmSync(workspace, { recursive: true, force: true });
 
-  check('elenca le locazioni scrivibili', system.includes('Puoi anche SCRIVERE queste 1'));
-  check('elenca quelle in sola lettura', system.includes('Queste 1 le puoi leggere ma non scrivere'));
-  check("nomina 'report' come unico canale", system.includes("chiamando il tool 'report'"));
+  check('elenca le locazioni scrivibili', system.includes('You may also WRITE these 1 locations'));
+  check('elenca quelle in sola lettura', system.includes('You may read, but not write, these 1 locations'));
+  check("nomina 'report' come unico canale", system.includes("calling the 'report' tool"));
   check(
     'avverte che i tentativi vengono rifiutati',
-    system.includes('viene rifiutato e registrato'),
+    system.includes('is rejected and recorded'),
   );
   check('mette la locazione giusta nella colonna giusta', () => {
-    const cut = system.indexOf('le puoi leggere ma non scrivere');
-    const writable = system.slice(system.indexOf('Puoi anche SCRIVERE'), cut);
+    const cut = system.indexOf('You may read, but not write');
+    const writable = system.slice(system.indexOf('You may also WRITE'), cut);
     const readonly = system.slice(cut);
     return writable.includes('scrivibile:') && !writable.includes('soloLettura:') && readonly.includes('soloLettura:');
   });
-  check('dice che la lettura non ha eccezioni', system.includes('Puoi LEGGERE tutte e 2 le locazioni'));
+  check('dice che la lettura non ha eccezioni', system.includes('You may READ all 2 locations'));
 }
 
 console.log('\n\x1b[1m16. Lettura dello stato globale\x1b[0m');
@@ -808,11 +808,11 @@ machine Lettura {
     check("il contatore resta quello dei 'set'", s.giri === 1);
 
     // E il prompt di sistema lo dice.
-    check('il prompt annuncia che si legge tutto', system.includes('Puoi LEGGERE tutte e 4 le locazioni'));
+    check('il prompt annuncia che si legge tutto', system.includes('You may READ all 4 locations'));
     check("il prompt nomina read_location", system.includes('read_location'));
     check(
       'il prompt segnala il valore abbreviato',
-      system.includes('usa read_location per leggerla intera'),
+      system.includes('use read_location to read the full value'),
     );
   }
 }
