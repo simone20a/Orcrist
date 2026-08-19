@@ -15,6 +15,10 @@ the global state.
 The complete language reference, including syntax, types, execution semantics,
 and validation rules, is available in [the DSL documentation](docs/dsl.md).
 
+
+![](./res/demoVideo.gif)
+
+
 ## Getting started
 
 ```bash

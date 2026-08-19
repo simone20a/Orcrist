@@ -480,7 +480,7 @@ console.log('\n\x1b[1m11. Errore di Tavily riportato senza fermare la corsa\x1b[
 
 console.log('\n\x1b[1m12. Nodi trascinabili\x1b[0m');
 {
-  const compiled = await compileModel(readFileSync('../examples/triage-assistenza.orc', 'utf8'));
+  const compiled = await compileModel(readFileSync(path.join(import.meta.dirname, '..', 'examples', 'support-triage.orc'), 'utf8'));
   const machine = compiled.machine!;
 
   const auto = layoutMachine(machine);

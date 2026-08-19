@@ -300,9 +300,9 @@ hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 // da essere parsabili e verificabili invece che restare commenti che
 // divergono dalla grammatica:
 //
-//   minimo.orc              il modello valido piu' piccolo possibile
-//   ciclo-sviluppo.orc      spec / implementazione / test / triage
-//   revisione-codice.orc    pattern oracolo, cicli tutti limitati
-//   pianifica-viaggio.orc   aritmetica nelle guardie, budget
-//   moderazione.orc         record assegnabile, 'set' su singolo campo
-//   triage-assistenza.orc   panoramica di tutti i costrutti
+//   minimal.orc             the smallest valid model
+//   development-cycle.orc   specification / implementation / testing / triage
+//   code-review.orc         oracle pattern and bounded cycles
+//   trip-planner.orc        arithmetic guards and budget
+//   moderation.orc          assignable record and single-field set
+//   support-triage.orc      overview of all language constructs

@@ -7,7 +7,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { compileModel } from '../src/language/compile.js';
 
-const dir = resolve(process.argv[2] ?? join(import.meta.dirname, '..', '..', 'examples'));
+const dir = resolve(process.argv[2] ?? join(import.meta.dirname, '..', 'examples'));
 const files = readdirSync(dir).filter((f) => f.endsWith('.orc')).sort();
 
 let failed = 0;
