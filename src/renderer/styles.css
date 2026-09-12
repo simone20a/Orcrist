@@ -1,0 +1,1237 @@
+/* ============================================================
+   Orcrist Agent — visual language
+
+   One flooding colour field, near-black for every mark, and a
+   grotesque set tight and large. No shadows, no gradients, no
+   borders except hairlines.
+
+   Text is never put in a box. Importance is carried by size,
+   weight and opacity — that is what the TYPE SCALE below is for,
+   and nothing in this file sets a font-size or a weight on its
+   own account: it joins a level. Two exemptions, both because
+   the alternative is unreadable rather than because it looks
+   better: a control has to read as pressable (buttons), and an
+   overlay floating over other content has to carry
+   its own ground (the diagram tooltip, the toast, the modal).
+   Everything else is text on the field.
+
+   The whole palette hangs off --brand. Change that one value and
+   the app re-skins; the tone-on-tone surfaces are derived from it
+   with colour-mix so they stay in key.
+   ============================================================ */
+
+:root {
+  /* ════════════════════════════════════════════════════════════
+     THE SIX SEEDS
+
+     A theme is these six values and nothing else. Everything below
+     them is derived, so swapping a palette means swapping six
+     colours — not hunting for literals through the stylesheet.
+     Each one is a ROLE, not a colour: what it means is fixed, what
+     it looks like is the theme's business.
+
+       --brand       the field. The one flooding colour everything
+                     sits on, and the colour of text that sits ON a
+                     filled mark (see --on-ink).
+       --ink         every mark: text, rules, arrows, the filled
+                     shapes. One colour does all of it, which is
+                     only possible because a theme must keep ink on
+                     field at a high ratio — around 8:1 or better,
+                     since the muted forms below are alpha steps
+                     down from it and still have to clear 4.5:1.
+       --accent      this went well, or this is the one that is
+                     live: the ok badge, the hover on the send mark.
+       --warn        attend to this — but nothing is broken.
+       --danger      this failed, or this button destroys something.
+       --marginalia  the woodcut figures in the empty corners of the
+                     layout, and nothing else. Decorative by
+                     definition, so it is the one seed that carries
+                     no meaning and can be chosen for looks alone.
+
+     A theme sets these on :root at runtime (see renderer/themes.ts).
+     ════════════════════════════════════════════════════════════ */
+
+  /* Sage — the default. Near-black on a pastel sage is ~12:1, which
+     is what lets every mark in the app be ink instead of white. */
+  --brand: #b9d9c6;
+  --ink: #0c1410;
+  --accent: #25533f;
+  --warn: #63440e;
+  --danger: #6d1f27;
+  --marginalia: #52389c;
+
+  /* ── derived; never set by a theme ───────────────────────────
+     The recessed surfaces step from the field TOWARDS the ink, so
+     they darken under a light theme and lighten under a dark one
+     without either case being special. */
+  --field: var(--brand);
+  --field-1: color-mix(in srgb, var(--brand) 93%, var(--ink));
+  --field-2: color-mix(in srgb, var(--brand) 87%, var(--ink));
+  --field-3: color-mix(in srgb, var(--brand) 79%, var(--ink));
+
+  /* The muted inks carry most of the small text, so they are set by
+     contrast target rather than by eye, and checked on the recessed
+     surfaces too, not just on the flat field. */
+  --ink-2: color-mix(in srgb, var(--ink) 80%, transparent);
+  --ink-3: color-mix(in srgb, var(--ink) 72%, transparent);
+  --hair: color-mix(in srgb, var(--ink) 26%, transparent);
+  --hair-soft: color-mix(in srgb, var(--ink) 14%, transparent);
+
+  /* Text and marks that sit on a surface filled with --ink: the send
+     disc, the context menu, the toast, the diagram tooltip, the tick
+     inside a checked box. The field colour reads on its own ink by
+     construction, whichever way round the theme is. */
+  --on-ink: var(--brand);
+
+  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Inter, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+button:focus:not(:focus-visible) { outline: none; }
+
+html, body, #root { height: 100%; margin: 0; }
+
+body {
+  background: var(--field);
+  color: var(--ink);
+  font: 400 14px/1.5 var(--sans);
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   THE TYPE SCALE
+
+   Nine levels, loudest first. Each is declared once, and every
+   place in the app that belongs to a level is listed with it —
+   so the stylesheet doubles as the register of what is important
+   and why.
+   ============================================================ */
+
+/* ── 1 · DISPLAY ──────────────────────────────────────────────
+   One per screen, and it names the screen. Nothing competes. */
+.t-display,
+.projects h1,
+.log-empty .big {
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ── 2 · TITLE ────────────────────────────────────────────────
+   Owns everything beneath it until the next one: the session, a
+   dialog, the state now executing, the state in the drawer. */
+.t-title,
+.modal-head h2,
+.ev.state-enter .sname,
+.state-name {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ── 3 · LEAD ─────────────────────────────────────────────────
+   What you asked for. It is the reason the whole turn exists, so
+   it is the heaviest thing in the transcript that is not a title. */
+.t-lead,
+.msg-user .bubble,
+.prov-name,
+input.role-model {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.026em;
+  color: var(--ink);
+}
+
+/* ── 4 · ANSWER ───────────────────────────────────────────────
+   The one conclusive thing the model says, once the run has
+   settled. The only prose at full weight and full contrast. */
+.t-answer,
+.ev.assistant.answer .ev-text {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* ── 5 · BODY ─────────────────────────────────────────────────
+   Ordinary reading text, at full contrast but no emphasis. This is
+   what `body` already sets, so a level only needs listing here when
+   something else would otherwise override it. Deliberately no bare
+   element selector: `.modal-body p` used to be here and it reached
+   into the diagram tooltip, painting near-black text on the black
+   panel. A level joins by class, never by tag. */
+.t-body,
+.check label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* ── 6 · SUPPORT ──────────────────────────────────────────────
+   Prose that helps but is not the point: the instruction a state
+   was given, what the model says while it is still working, the
+   explanation under a setting. Set back so the eye can pass it. */
+.t-support,
+.projects .sub,
+.ev.state-enter .sprompt,
+.ev.assistant .ev-text,
+.ev.error .ev-text,
+.help,
+.role-does,
+.toggle-row .tname,
+.field .help {
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* ── 7 · PROCESS ──────────────────────────────────────────────
+   The machinery of a run: tools used, values reported, values
+   computed, transitions taken. Bold so it scans as structure,
+   muted so it never reads as the answer. There is a lot of it. */
+.t-process,
+.tool-head .tname,
+.ev.writes,
+.ev.assignment,
+.ev.observe,
+.ev.transition,
+.store-row .n,
+.kv dd {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+
+/* ── 8 · MARGINAL ─────────────────────────────────────────────
+   Counts, paths, dates, keyboard hints, status notes. Present
+   when looked for, invisible when not. */
+.t-marginal,
+.titlebar .crumb,
+.project-card .path,
+.project-card .meta,
+.session-item .d,
+.tool-head .tsum,
+.ev.status .ev-text,
+.ev.model-note,
+.composer .hint,
+.preview-hint,
+.marginal,
+.prov-note,
+.toggle-row .tdesc,
+.modal-foot .foot-note {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+/* ── 9 · EYEBROW ──────────────────────────────────────────────
+   The word above a thing, saying what kind of thing it is.
+   Never a sentence. */
+.eyebrow,
+.t-eyebrow,
+label,
+.rail-head .label,
+.drawer-head .label,
+.panel-title,
+.section-title,
+.tool-body .lbl,
+.state-tag,
+.sprompt-more,
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ── FIGURE ───────────────────────────────────────────────────
+   A number that is the point. Set enormous on purpose. */
+.figure { font-weight: 700; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; line-height: 0.82; }
+.figure.xl { font-size: 62px; }
+.figure.lg { font-size: 40px; }
+
+code, .mono { font-family: var(--mono); letter-spacing: 0; }
+
+/* Without their pills, two adjacent labels run together into one phrase
+   ("FINAL VISIT 1"), so they get a separator of their own. */
+.badge + .badge::before { content: '·'; margin-right: 9px; color: var(--ink-3); }
+
+/* ── colour variants of a level, not levels of their own ───── */
+.badge.ok { color: var(--accent); }
+.badge.warn { color: var(--warn); }
+.badge.err { color: var(--danger); }
+.badge.live { color: var(--ink); }
+
+/* ============================================================
+   CONTROLS — the first exemption: these must read as pressable
+   ============================================================ */
+button {
+  font: 500 13px/1 var(--sans);
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: background .13s, color .13s, border-color .13s;
+}
+button:hover:not(:disabled) { border-color: var(--ink); }
+button:disabled { opacity: .35; cursor: default; }
+
+button.primary { background: var(--ink); color: var(--on-ink); border-color: var(--ink); font-weight: 700; }
+button.primary:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+
+/* A borderless button hovers the way the icon buttons do: the label darkens
+   and a soft field appears behind it. The field is padding the button always
+   has, cancelled by an equal negative margin, so the label sits exactly where
+   it did and nothing moves when the pointer arrives. The rule this replaces
+   was a line under the label, which read as an underline — the mark this app
+   reserves for a link and for the option that is currently the case. */
+button.ghost {
+  border-color: transparent;
+  color: var(--ink-3);
+  padding: 4px 9px;
+  margin: 0 -9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+button.ghost:hover:not(:disabled) { color: var(--ink); border-color: transparent; background: var(--field-2); }
+
+button.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, transparent); }
+button.danger:hover:not(:disabled) { background: var(--danger); color: var(--on-ink); border-color: var(--danger); }
+
+button.icon {
+  border-color: transparent;
+  color: var(--ink-3);
+  padding: 7px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+button.icon:hover:not(:disabled) { color: var(--ink); border-color: transparent; background: var(--field-3); }
+button.icon.on { background: var(--ink); color: var(--on-ink); }
+button.icon.tiny { padding: 3px; }
+button.icon.tiny svg { width: 13px; height: 13px; }
+
+/* the one big affordance on a screen */
+.disc {
+  background: var(--ink);
+  color: var(--on-ink);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.disc:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: var(--on-ink); }
+button.disc:disabled { background: transparent; color: var(--ink-3); border-color: var(--hair); }
+
+/* The composer's one control: a triangle that sends, a square that stops.
+   No disc behind either — the mark alone is the button, in the ink that every
+   other mark in the app is drawn in, so it belongs to the palette rather than
+   sitting on top of it. The shape carries the difference; it does not need a
+   colour as well. The padding is what keeps a comfortable hit area under a
+   glyph this small. */
+.glyph {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 11px;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.glyph svg { width: 24px; height: 24px; }
+.glyph:hover:not(:disabled) { background: transparent; border: none; color: var(--accent); }
+/* A disabled control should look unavailable, not absent: with nothing behind
+   the mark, this triangle is the only thing showing where the send control is
+   before you have typed anything, and at hairline strength it disappears. */
+.glyph:disabled {
+  background: transparent;
+  border: none;
+  /* The global button opacity is tuned for controls that have a box to fade;
+     it would multiply this colour down to a hairline. Muting is carried in the
+     colour here, as it is everywhere else in this stylesheet. */
+  opacity: 1;
+  color: color-mix(in srgb, var(--ink) 38%, transparent);
+}
+
+/* fields are ruled, not boxed */
+input, textarea, select {
+  font: 400 14px/1.5 var(--sans);
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--hair);
+  border-radius: 0;
+  padding: 8px 0;
+  width: 100%;
+  appearance: none;
+}
+input::placeholder, textarea::placeholder { color: var(--ink-3); }
+input:focus, textarea:focus, select:focus { outline: none; border-bottom-color: var(--ink); }
+textarea { resize: vertical; }
+select { cursor: pointer; }
+label { display: block; margin-bottom: 8px; }
+
+.app { display: flex; flex-direction: column; height: 100%; background: var(--field); }
+
+/* ============================================================
+   TITLE BAR
+   ============================================================ */
+.titlebar {
+  height: 44px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px 0 84px;
+  -webkit-app-region: drag;
+}
+.titlebar .spacer { flex: 1; }
+.titlebar button { -webkit-app-region: no-drag; }
+.titlebar .crumb { letter-spacing: 0.12em; text-transform: uppercase; }
+.titlebar .crumb strong { color: var(--ink); font-weight: 700; }
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+.projects { flex: 1; overflow: auto; padding: 30px 44px 44px; }
+.projects-inner { max-width: 1060px; margin: 0 auto; }
+.projects h1 { margin-bottom: 16px; }
+.projects .sub { margin: 0 0 44px; max-width: 46ch; }
+
+.project-grid {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  background: var(--hair-soft);
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--hair);
+}
+.project-card {
+  background: var(--field);
+  border: none;
+  border-radius: 0;
+  padding: 22px 22px 18px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  min-height: 172px;
+  transition: background .13s;
+}
+.project-card:hover { background: var(--field-2); }
+.project-card .name {
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  color: var(--ink);
+  margin-bottom: 7px;
+}
+.project-card .path { word-break: break-all; font-family: var(--mono); font-size: 10.5px; }
+.project-card .meta { margin-top: auto; padding-top: 16px; display: flex; align-items: flex-end; gap: 8px; }
+.project-card .meta .spacer { flex: 1; }
+.project-card.new { align-items: center; justify-content: center; gap: 14px; }
+.project-card.new .disc { width: 58px; height: 58px; }
+.project-card.new > span:last-child {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ============================================================
+   WORKSPACE
+   ============================================================ */
+.workspace { flex: 1; display: flex; min-height: 0; }
+
+.rail {
+  width: 236px;
+  flex: 0 0 236px;
+  border-right: 1px solid var(--hair);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.rail-head { padding: 4px 14px 16px 18px; display: flex; align-items: center; gap: 8px; }
+.rail-head .label { flex: 1; }
+.rail-list { flex: 1; overflow: auto; padding: 0 14px 14px 0; }
+
+/* selection is a rule and a weight, not a filled box */
+.session-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-left: 6px solid transparent;
+  border-radius: 0;
+  padding: 10px 8px 10px 14px;
+  cursor: pointer;
+  transition: border-color .13s;
+}
+.session-item:hover { background: var(--field-2); }
+.session-item.active { border-left-color: var(--ink); background: transparent; }
+.session-item .si-text { flex: 1; min-width: 0; }
+.session-item .del { opacity: 0; transition: opacity .13s; }
+.session-item:hover .del, .session-item.active .del { opacity: 1; }
+.session-item .t {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.session-item.active .t { font-weight: 700; color: var(--ink); }
+.session-item .d { margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+.session-item .rename {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 0 0 2px;
+  border-bottom: 1.5px solid var(--ink);
+}
+.session-item .d .spacer { flex: 1; }
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+/* The running state is a word, not a chip. It lives in the title bar, to the
+   left of the control that opens the machine it belongs to — the only thing
+   up there that appears and disappears, which is most of how you notice it. */
+.state-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 3px 0;
+  margin-right: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  box-shadow: none;
+}
+.state-pill:hover:not(:disabled) { background: transparent; border: none; color: var(--ink); }
+.state-pill .mono { font-size: 12px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+/* ============================================================
+   TRANSCRIPT
+   ============================================================ */
+.log { flex: 1; overflow: auto; padding: 16px 30px 30px; }
+.log-empty { display: grid; place-items: center; height: 100%; text-align: center; }
+/* A watermark, not an announcement: it keeps the display size so the empty
+   screen still has a shape, at a contrast that gets out of the way. The 56%
+   is not chosen for the default palette — it is the lowest value that still
+   clears 3:1 (AA's floor for large text) on the LEAST contrasty palette the
+   app ships. An alpha tuned against sage's 12:1 silently fails at 9:1, which
+   is exactly what happened the first time. */
+.log-empty .big { color: color-mix(in srgb, var(--ink) 56%, transparent); }
+
+.turn { margin-bottom: 20px; }
+.turn + .turn { border-top: 1px solid var(--ink); padding-top: 24px; }
+
+.msg-user { margin: 0 0 22px; max-width: 68ch; }
+.msg-user .eyebrow { margin-bottom: 8px; }
+.msg-user .bubble {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  max-width: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ev { margin-bottom: 12px; max-width: 880px; }
+.ev:has(> .tool) { margin-bottom: 2px; }
+.ev:has(> .tool) + .ev:not(:has(> .tool)) { margin-top: 14px; }
+.ev-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ev-head .who { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--danger); }
+.ev-text { white-space: pre-wrap; word-break: break-word; }
+.ev.assistant .ev-text, .ev.assistant.answer .ev-text { max-width: 72ch; }
+.ev.assistant.answer { margin-top: 16px; }
+
+/* a state opening: eyebrow, rule, name */
+.ev.state-enter { margin: 30px 0 16px; padding-top: 14px; border-top: 1px solid var(--ink); }
+.ev.state-enter .state-enter-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.ev.state-enter .eyebrow { margin-bottom: 7px; }
+.ev.state-enter .visit { text-align: right; }
+.ev.state-enter .sprompt { margin-top: 10px; white-space: pre-wrap; max-width: 72ch; }
+
+/* Collapsed to its opening lines. -webkit-line-clamp is the only thing that
+   clamps by LINE rather than by height, which matters because the prompt is
+   rendered markdown and its line height is not a constant the CSS knows. */
+.sprompt-block.clipped:not(.open) > div { cursor: pointer; }
+.sprompt-block:not(.open) .sprompt {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* EYEBROW.
+   No rule under it: this control sits directly under a block of prose, and a
+   line there reads as the end of the text rather than as a button. What marks
+   it is the caret, which points the way the block is about to move. */
+button.sprompt-more { margin-top: 5px; margin-bottom: 0; }
+button.sprompt-more .caret { margin-right: 6px; font-size: 9px; display: inline-block; }
+
+/* tool use: a bold muted line you can open, with a ruled body */
+.tool { border: none; border-radius: 0; background: transparent; overflow: visible; }
+.tool-head { display: flex; align-items: center; gap: 9px; padding: 3px 0; cursor: pointer; }
+.tool-head:hover .tname, .tool-head:hover .tsum { color: var(--ink); }
+.tool-head .caret { color: var(--ink-3); font-size: 9px; width: 9px; flex: 0 0 auto; }
+.tool-head .tname { font-weight: 700; color: var(--ink-2); }
+.tool-head .tsum { font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.tool-body {
+  border-left: 2px solid var(--hair);
+  background: transparent;
+  padding: 8px 0 10px 16px;
+  margin: 4px 0 4px 4px;
+}
+.tool-body pre {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--ink-2);
+  max-height: 320px;
+  overflow: auto;
+}
+.tool-body pre:last-child { margin-bottom: 0; }
+.tool-body .lbl { margin-bottom: 6px; }
+
+.ev.transition { display: flex; align-items: center; gap: 8px; }
+.ev.transition .arrow { color: var(--ink-2); }
+.ev.transition .lbl { color: var(--ink); }
+.ev.transition.limit .lbl { color: var(--warn); }
+/* A measurement is the one line in the transcript that did not come from the
+   model, so it carries the accent the store legend uses for 'observed' and
+   prints the command that produced it. */
+.ev.observe .cmd { color: var(--ink-3); }
+.ev.observe .dot-observe { display: inline-block; vertical-align: middle; margin-right: 6px; }
+.ev.observe.failed .t { color: var(--warn); }
+.ev.writes .t, .ev.assignment .t, .ev.observe .t {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-right: 6px;
+}
+
+/* reaching a final state: the loudest line in the turn after the lead */
+.ev.final {
+  display: block;
+  background: transparent;
+  border: none;
+  border-top: 2px solid var(--ink);
+  border-radius: 0;
+  padding: 12px 0 0;
+  margin: 18px 0 0;
+  color: var(--ink);
+}
+.ev.final .fname { font-size: 26px; font-weight: 700; letter-spacing: -0.035em; line-height: 1; display: block; margin-top: 6px; }
+
+.ev.model-note { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 0; }
+.ev.model-note .mono { color: var(--ink); font-weight: 700; font-size: 12px; }
+
+.model-src { border: none; border-left: 2px solid var(--ink); border-radius: 0; background: transparent; }
+.model-src pre {
+  margin: 0;
+  padding: 4px 0 4px 18px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow: auto;
+  max-height: 420px;
+  color: var(--ink);
+}
+
+/* ============================================================
+   COMPOSER — a ruled field, not a pill
+   ============================================================ */
+.composer { flex: 0 0 auto; padding: 10px 30px 22px; }
+.composer-box {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--hair);
+  border-radius: 0;
+  padding: 4px 0 10px;
+  transition: border-color .13s;
+}
+.composer-box:focus-within { border-bottom-color: var(--ink); }
+.composer textarea {
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  min-height: 30px;
+  max-height: 180px;
+  resize: none;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+.composer textarea:focus { outline: none; border: none; }
+.composer .hint { margin-top: 12px; display: flex; gap: 20px; letter-spacing: 0.06em; }
+
+/* ============================================================
+   MACHINE DRAWER
+   ============================================================ */
+.machine-drawer {
+  width: 340px;
+  flex: 0 0 340px;
+  border-left: 1px solid var(--hair);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.drawer-head { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 4px 12px 16px 22px; }
+.drawer-head .spacer { flex: 1; }
+.drawer-scroll { flex: 1; overflow: auto; min-height: 0; }
+
+.panel { border-top: 1px solid var(--hair); padding: 18px 22px; }
+.panel-title { margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.panel-title .spacer { flex: 1; }
+
+.thumb-wrap { background: transparent; border-radius: 0; overflow: hidden; padding: 0; }
+.thumb-empty { display: grid; place-items: center; height: 108px; color: var(--ink-3); font-size: 12px; text-align: center; }
+
+.node-box { fill: var(--field-3); stroke: none; }
+.node-box.final { fill: none; stroke: var(--ink); stroke-width: 1.2; }
+.node-box.visited { fill: var(--field-3); }
+.node-box.current { fill: var(--ink); stroke: none; }
+/* full ink, not ink-2: at 7.5px on the recessed node fill, the muted form
+   clears 4.5:1 on the default palette and not on the least contrasty one */
+.node-label { fill: var(--ink); font-size: 7.5px; font-family: var(--mono); font-weight: 600; }
+.node-label.final { fill: var(--ink); }
+.node-label.current { fill: var(--on-ink); font-weight: 700; }
+.edge { stroke: var(--ink-3); fill: none; stroke-width: 1; }
+.edge.otherwise { stroke-dasharray: 2 2.5; }
+.edge.limit { stroke: var(--warn); stroke-dasharray: 1 3; }
+.edge.hot { stroke: var(--ink); stroke-width: 1.6; }
+.start-dot { fill: var(--ink); }
+/* markers do not inherit the referencing element's colour, so they are styled
+   here rather than carrying a hex of their own */
+.arrowhead { fill: var(--ink-3); stroke: none; }
+.arrowhead.hot { fill: var(--ink); }
+.node-halo { stroke: var(--ink); stroke-opacity: 0.35; }
+
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 7px 16px; }
+.kv dt { color: var(--ink-3); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding-top: 2px; }
+.kv dd { margin: 0; word-break: break-word; }
+
+.store-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hair-soft);
+}
+.store-row:last-child { border-bottom: none; }
+.store-row .v {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-left: auto;
+  text-align: right;
+  word-break: break-word;
+}
+.store-row .v.unset { color: var(--ink-3); font-weight: 400; }
+.dot-agent { width: 7px; height: 7px; border-radius: 999px; background: var(--ink); flex: 0 0 auto; }
+.dot-assign { width: 7px; height: 7px; border-radius: 999px; border: 1.5px solid var(--ink); flex: 0 0 auto; }
+/* The three owners are told apart by shape first and colour second, so the
+   distinction survives a palette swap and a monochrome screenshot alike:
+   filled circle = the agent claimed it, hollow circle = the runtime derived
+   it, square = the runtime measured it. */
+.dot-observe { width: 7px; height: 7px; border-radius: 1px; background: var(--accent); flex: 0 0 auto; }
+
+/* ============================================================
+   MACHINE PREVIEW
+   ============================================================ */
+.preview { position: relative; background: transparent; border-radius: 0; padding: 18px 0 10px; }
+.preview-hint { margin: 14px 0 0; text-align: center; }
+
+.pv-box { fill: var(--field-3); stroke: none; }
+.pv-box.final { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.pv-box.hovered, .pv-box.current, .pv-box.shown { fill: var(--ink); stroke: none; }
+.pv-label { fill: var(--ink); font-size: 15px; font-weight: 700; letter-spacing: -0.025em; font-family: var(--sans); pointer-events: none; }
+.pv-label.final { fill: var(--ink); }
+.pv-label.on-ink { fill: var(--on-ink); }
+.pv-limit { fill: var(--warn); font-size: 11px; font-weight: 600; font-family: var(--mono); pointer-events: none; }
+.pv-sub { fill: var(--ink-3); font-size: 9px; font-family: var(--mono); pointer-events: none; }
+
+/* second exemption: an overlay above a diagram must carry its own ground */
+.pv-tip {
+  position: absolute;
+  z-index: 5;
+  width: 320px;
+  background: var(--ink);
+  color: var(--on-ink);
+  border-radius: 4px;
+  padding: 16px 18px;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 16px));
+}
+.pv-tip.below { transform: translate(-50%, 16px); }
+.pv-tip-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.pv-tip-head .mono { color: var(--on-ink); font-weight: 700; font-size: 14px; }
+.pv-tip .badge { color: color-mix(in srgb, var(--on-ink) 80%, transparent); }
+.pv-tip .badge.ok { color: var(--on-ink); }
+.pv-tip-body { margin: 0 0 12px; font-size: 13px; font-weight: 400; line-height: 1.45; color: var(--on-ink); }
+/* 80%, again set for the worst palette rather than the default */
+.pv-tip .kv dt { color: color-mix(in srgb, var(--on-ink) 80%, transparent); }
+.pv-tip .kv dd { color: var(--on-ink); }
+
+/* ============================================================
+   MODAL — third exemption: a dialog needs its own ground
+   ============================================================ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--ink) 64%, transparent);
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  z-index: 40;
+}
+.modal {
+  background: var(--field);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal.wide { max-width: 780px; }
+.modal.xl { max-width: 960px; }
+.modal-head { padding: 28px 32px 18px; display: flex; align-items: flex-start; gap: 14px; }
+.modal-body { padding: 6px 32px 26px; overflow: auto; }
+.modal-foot { padding: 18px 32px 24px; border-top: 1px solid var(--ink); display: flex; gap: 12px; align-items: center; justify-content: flex-end; }
+.modal-foot .foot-note { margin-right: auto; }
+
+.field { margin-bottom: 22px; }
+.field .help { margin-top: 8px; }
+.row { display: flex; gap: 16px; }
+.row > * { flex: 1; }
+
+.tabs { display: flex; gap: 24px; padding: 0 32px; border-bottom: 1px solid var(--hair); }
+.tab {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  padding: 10px 0 12px;
+  color: var(--ink-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tab:hover:not(:disabled) { color: var(--ink-2); border-color: transparent; }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+.section-title { margin: 30px 0 14px; padding-bottom: 9px; border-bottom: 1px solid var(--hair); display: flex; align-items: center; gap: 10px; }
+.section-title:first-child { margin-top: 0; }
+
+/* Fields are ruled rather than boxed, which strips a checkbox of the box it
+   IS — so it gets drawn here instead, in the same ink-on-field pair as the
+   context menu: an empty square, filled when the setting is on. */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1.6px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+}
+input[type="checkbox"]:checked { background: var(--ink); }
+input[type="checkbox"]:checked::after {
+  content: '';
+  width: 9px;
+  height: 4.5px;
+  border-left: 2px solid var(--on-ink);
+  border-bottom: 2px solid var(--on-ink);
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.check { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.check input { margin-top: 2px; }
+.check label { margin: 0; text-transform: none; letter-spacing: -0.005em; }
+
+/* ============================================================
+   SETTINGS
+
+   Three screens of choices, read in the same language as the
+   rest of the app: the thing you came to read set large, the
+   word above it saying what kind of thing it is, the reasoning
+   set back, and rules instead of boxes. Nothing here is a form
+   that has to be filled in order — each block is one decision.
+   ============================================================ */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* --- a model role ------------------------------------------------- */
+.role { padding: 22px 0 4px; }
+.role:first-of-type { padding-top: 10px; }
+.role-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.role-does { max-width: 58ch; }
+.role-body { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+
+/* the model id is what you came here to read */
+/* LEAD, in mono because a model id is an identifier, not a phrase */
+input.role-model {
+  width: 100%;
+  font-family: var(--mono);
+  letter-spacing: -0.012em;
+  padding: 2px 0 7px;
+  border-bottom: 2px solid var(--hair);
+}
+input.role-model:focus { border-bottom-color: var(--ink); }
+
+/* a row of choices; the chosen one is marked the way the app marks anything
+   that is currently the case — a thick rule under it */
+.seg { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+button.seg-opt {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 2px 0 5px;
+  color: var(--ink-3);
+  box-shadow: inset 0 -2px 0 transparent;
+}
+button.seg-opt:hover:not(:disabled) { color: var(--ink-2); background: transparent; border: none; }
+button.seg-opt.on { color: var(--ink); font-weight: 700; box-shadow: inset 0 -2px 0 var(--ink); }
+/* what Ollama says is installed on this machine, listed under the role that
+   would use it — a row of choices like any other, so picking one is the same
+   gesture as picking the provider above it. Model ids are identifiers, so
+   they are set in mono. */
+.local-models { width: 100%; margin-top: 2px; }
+.local-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.local-models .seg { gap: 14px 18px; }
+.local-models button.seg-opt { font-family: var(--mono); font-size: 12px; }
+.local-models .help { margin: 0; max-width: 58ch; }
+
+/* This one keeps its rule: it is a link into another settings tab, not a
+   button, and the rule is what says so. Its margin goes back to zero since it
+   has no field to make room for. */
+button.warn-link { color: var(--warn); box-shadow: inset 0 -1px 0 var(--warn); padding: 0; margin: 0; }
+button.warn-link:hover:not(:disabled) { color: var(--warn); box-shadow: inset 0 -1px 0 var(--warn); }
+
+/* --- a provider ---------------------------------------------------- */
+.provs { display: flex; flex-direction: column; }
+/* the one divider kept in settings: providers are a list of like things,
+   and without a rule between them the fields of one run into the next */
+.prov { padding: 20px 0 18px; border-bottom: 1px solid var(--hair); }
+.prov:first-child { padding-top: 8px; }
+.prov:last-of-type { border-bottom: none; }
+.prov-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.prov-name { flex: 0 0 auto; }
+.prov-fields { display: flex; gap: 24px; flex-wrap: wrap; }
+.prov-fields .field { flex: 1 1 220px; margin-bottom: 0; }
+.prov-note { margin-top: 10px; }
+
+/* EYEBROW, in the one-word answer to "can this be called right now" */
+.state-tag { color: var(--warn); }
+.state-tag.on { color: var(--accent); }
+
+/* --- the palettes, shown as themselves ------------------------------ */
+.themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+  gap: 14px;
+  padding: 14px 0 6px;
+}
+button.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 16px 16px 13px;
+  border: 1.5px solid transparent;
+  border-radius: 0;
+  text-align: left;
+  min-height: 108px;
+}
+/* the chosen one is marked the way the open session is: a thick bar, in the
+   swatch's own ink so the mark belongs to the palette it is marking */
+button.swatch.on { border-color: currentColor; box-shadow: inset 4px 0 0 currentColor; }
+button.swatch:hover:not(:disabled) { border-color: currentColor; background: inherit; color: inherit; }
+.swatch-name { font-size: 19px; font-weight: 700; letter-spacing: -0.03em; }
+.swatch-roles { display: flex; gap: 5px; margin-top: auto; }
+.swatch-roles i { width: 15px; height: 15px; border-radius: 999px; display: block; }
+.swatch-note { font-size: 10.5px; font-weight: 500; line-height: 1.35; opacity: 0.78; }
+
+/* --- an on/off setting, read as a row ------------------------------- */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 11px 0;
+  cursor: pointer;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.toggle-row.static { cursor: default; }
+.toggle-row > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* SUPPORT; on/off is carried by contrast and by the control, not by weight */
+.toggle-row.on .tname { color: var(--ink); }
+.toggle-row .tdesc { display: block; }
+
+
+/* a right-click menu floats over what you were reading — same exemption */
+.ctx {
+  position: fixed;
+  z-index: 70;
+  min-width: 168px;
+  background: var(--ink);
+  border-radius: 6px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.ctx-item {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--on-ink);
+}
+.ctx-item:hover:not(:disabled) { background: color-mix(in srgb, var(--on-ink) 20%, transparent); border: none; color: var(--on-ink); }
+.ctx-item.danger { color: color-mix(in srgb, var(--danger) 30%, var(--on-ink)); border: none; }
+.ctx-item.danger:hover:not(:disabled) { background: var(--danger); color: var(--on-ink); }
+
+/* a toast floats over whatever you were reading */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--on-ink);
+  border-radius: 4px;
+  padding: 14px 24px;
+  z-index: 60;
+  font-size: 13px;
+  font-weight: 600;
+}
+.toast.err { background: var(--danger); }
+
+.spin {
+  width: 12px;
+  height: 12px;
+  border: 1.8px solid var(--ink-3);
+  border-top-color: var(--ink);
+  border-radius: 999px;
+  animation: spin .7s linear infinite;
+  flex: 0 0 auto;
+}
+.state-pill .spin { border-color: var(--hair); border-top-color: var(--ink); }
+/* on a session row it is a footnote, not an announcement */
+.session-item .d .spin { width: 9px; height: 9px; border-width: 1.5px; border-color: var(--hair); border-top-color: var(--ink-2); }
+/* the state a background session is executing: the one live thing in the list */
+.session-item .d .mono.running { color: var(--ink); font-weight: 700; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   MARGINALIA
+
+   Woodcut figures standing in the parts of the layout nothing
+   else uses, each facing the thing near it that matters. Purely
+   decorative: they take no clicks, hold no meaning, and are
+   hidden from assistive tech. Sized off the viewport so they stay
+   at roughly a tenth of the window, and dropped entirely when the
+   window is too narrow to have margins to spare.
+   ============================================================ */
+.deco {
+  color: var(--marginalia);
+  opacity: 0.8;
+  pointer-events: none;
+  user-select: none;
+  height: clamp(74px, 12vh, 142px);
+  width: auto;
+  display: block;
+  z-index: 0;
+}
+.deco-abs { position: absolute; }
+
+/* They always stand together, at the bottom left, out of the way of anything
+   you might want to click or read. */
+.frieze {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.rail-deco { padding: 12px 0 16px 14px; }
+.rail-deco .deco { height: clamp(58px, 9.5vh, 112px); }
+
+/* projects: standing on the heading's baseline, just to its right */
+.projects-head { display: flex; align-items: flex-end; gap: 44px; }
+.projects-frieze { padding-bottom: 4px; }
+.projects-frieze .deco { height: clamp(62px, 9.5vh, 112px); }
+
+@media (max-height: 640px) {
+  .deco { display: none; }
+}
+
+/* ============================================================
+   MARKDOWN
+
+   What the model says is rendered as Markdown. Everything here
+   inherits the size, weight and colour of whatever type level the
+   message belongs to — these rules only set the shape the level
+   cannot: rhythm between blocks, list indents, code.
+   ============================================================ */
+.md { white-space: normal; }
+
+/* A structured answer keeps the answer's size and full contrast but steps back
+   from 700, so its own bold, headings and code have somewhere to stand out. */
+.ev.assistant.answer.rich .md { font-size: 17px; font-weight: 500; line-height: 1.55; letter-spacing: -0.012em; }
+.ev.assistant.answer.rich .md strong { font-weight: 750; }
+.ev.assistant.answer.rich .md-h { font-weight: 750; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md-p { margin: 0 0 0.7em; }
+
+.md-h { margin: 1.1em 0 0.45em; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.md-h1 { font-size: 1.34em; }
+.md-h2 { font-size: 1.2em; }
+.md-h3 { font-size: 1.08em; }
+.md-h4, .md-h5, .md-h6 { font-size: 1em; }
+
+.md strong { font-weight: 800; }
+.md em { font-style: italic; }
+.md del { text-decoration: line-through; opacity: 0.7; }
+
+.md-list { margin: 0 0 0.7em; padding-left: 1.35em; }
+.md-li { margin-bottom: 0.28em; }
+.md-li::marker { color: var(--ink-3); }
+.md-list .md-list { margin: 0.28em 0 0; }
+
+.md-quote {
+  margin: 0 0 0.7em;
+  padding-left: 0.9em;
+  border-left: 2px solid var(--hair);
+  color: var(--ink-2);
+}
+.md-hr { border: none; border-top: 1px solid var(--hair); margin: 1.1em 0; }
+
+.md-inline-code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  font-weight: 600;
+  letter-spacing: 0;
+  padding: 0.08em 0.3em;
+  background: var(--field-2);
+  border-radius: 3px;
+}
+
+/* A code block is ruled, not boxed — the same idiom as an opened tool body. */
+.md-code {
+  margin: 0 0 0.8em;
+  padding: 0.1em 0 0.1em 1em;
+  border-left: 2px solid var(--ink);
+  overflow-x: auto;
+}
+.md-code code {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: var(--ink);
+  white-space: pre;
+}
+
+.md-link { color: var(--ink); text-decoration: none; box-shadow: inset 0 -1px 0 var(--ink-3); cursor: pointer; }
+.md-link:hover { box-shadow: inset 0 -1px 0 var(--ink); }
+
+/* The bar is there while you are scrolling and gone a moment after. The gutter
+   is reserved whether or not a thumb is painted in it, so nothing on the page
+   moves when one appears. The class is put on by scrollbars.ts — CSS has no
+   "is scrolling" state to hang this on. */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  transition: background 0.45s ease 0.2s;
+}
+.scrolling::-webkit-scrollbar-thumb {
+  background: var(--ink-3);
+  background-clip: content-box;
+  transition: background 0.08s ease;
+}
+.scrolling::-webkit-scrollbar-thumb:hover { background: var(--ink-2); background-clip: content-box; }

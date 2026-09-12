@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4.0 -128.0 1430.0 326.0" width="100%" style="max-width:1430px;height:auto;display:block;margin:0 auto" role="img" aria-label="State machine ScheduleCli">
+<defs><marker id="a-ScheduleCli" viewBox="0 0 7 7" refX="6.5" refY="3.5" markerWidth="4.2" markerHeight="4.2" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#0c1410"/></marker></defs>
+<path d="M 146 87 C 179 87, 179 87, 210 87" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 128.6 70 L 128.6 12 Q 128.6 4 136.6 4 L 1272 4 Q 1280 4 1280 12 L 1280 119 Q 1280 127 1288 127 L 1302 127" fill="none" stroke="#0c1410" stroke-width="0.9" stroke-opacity="0.28" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 328 87 C 361 87, 361 87, 392 87" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 310.6 70 L 310.6 -8 Q 310.6 -16 318.6 -16 L 1272 -16 Q 1280 -16 1280 -8 L 1280 119 Q 1280 127 1288 127 L 1302 127" fill="none" stroke="#0c1410" stroke-width="0.9" stroke-opacity="0.28" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 510 87 C 543 87, 543 87, 574 87" fill="none" stroke="#0c1410" stroke-width="1.4" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 452 104 C 452 152, 270 152, 270 105" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 692 87 C 725 87, 725 127, 756 127" fill="none" stroke="#0c1410" stroke-width="1.4" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 692 87 C 725 87, 725 47, 756 47" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 674.6 70 L 674.6 -28 Q 674.6 -36 682.6 -36 L 1272 -36 Q 1280 -36 1280 -28 L 1280 119 Q 1280 127 1288 127 L 1302 127" fill="none" stroke="#0c1410" stroke-width="0.9" stroke-opacity="0.28" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 816 64 C 816 152, 270 152, 270 105" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 856.6 30 L 856.6 -48 Q 856.6 -56 864.6 -56 L 1272 -56 Q 1280 -56 1280 -48 L 1280 119 Q 1280 127 1288 127 L 1302 127" fill="none" stroke="#0c1410" stroke-width="0.9" stroke-opacity="0.28" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 874 127 C 907 127, 907 127, 938 127" fill="none" stroke="#0c1410" stroke-width="1.4" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 874 127 C 907 127, 907 47, 938 47" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 856.6 110 L 856.6 -68 Q 856.6 -76 864.6 -76 L 1272 -76 Q 1280 -76 1280 -68 L 1280 119 Q 1280 127 1288 127 L 1302 127" fill="none" stroke="#0c1410" stroke-width="0.9" stroke-opacity="0.28" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 998 64 C 998 152, 452 152, 452 105" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 1038.6 30 L 1038.6 -88 Q 1038.6 -96 1046.6 -96 L 1272 -96 Q 1280 -96 1280 -88 L 1280 119 Q 1280 127 1288 127 L 1302 127" fill="none" stroke="#0c1410" stroke-width="0.9" stroke-opacity="0.28" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 1056 127 C 1089 127, 1089 87, 1120 87" fill="none" stroke="#0c1410" stroke-width="1.4" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 998 144 C 998 192, 270 192, 270 105" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 1038.6 110 L 1038.6 -108 Q 1038.6 -116 1046.6 -116 L 1272 -116 Q 1280 -116 1280 -108 L 1280 119 Q 1280 127 1288 127 L 1302 127" fill="none" stroke="#0c1410" stroke-width="0.9" stroke-opacity="0.28" marker-end="url(#a-ScheduleCli)"/>
+<path d="M 1238 87 C 1271 87, 1271 47, 1302 47" fill="none" stroke="#0c1410" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#a-ScheduleCli)"/>
+<circle cx="15" cy="87" r="4.5" fill="#0c1410"/>
+<path d="M 20 87 L 29 87" stroke="#0c1410" stroke-width="1.4" marker-end="url(#a-ScheduleCli)"/>
+<rect x="30" y="70" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="88" y="91.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">Semantics</text>
+<text x="30" y="118" text-anchor="start" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="rgba(12,20,16,0.72)">≤ 3 visits → Abandoned</text>
+<rect x="212" y="70" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="270" y="91.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">Implement</text>
+<text x="212" y="118" text-anchor="start" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="rgba(12,20,16,0.72)">≤ 8 visits → Abandoned</text>
+<rect x="394" y="70" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="452" y="91.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">UnitTest</text>
+<rect x="576" y="70" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="634" y="91.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">Differential</text>
+<text x="576" y="118" text-anchor="start" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="rgba(12,20,16,0.72)">≤ 5 visits → Abandoned</text>
+<rect x="758" y="30" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="816" y="51.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">Adjudicate</text>
+<text x="758" y="78" text-anchor="start" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="rgba(12,20,16,0.72)">≤ 5 visits → Abandoned</text>
+<rect x="758" y="110" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="816" y="131.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">Benchmark</text>
+<text x="758" y="158" text-anchor="start" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="rgba(12,20,16,0.72)">≤ 4 visits → Abandoned</text>
+<rect x="940" y="30" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="998" y="51.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">Optimise</text>
+<text x="940" y="78" text-anchor="start" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="rgba(12,20,16,0.72)">≤ 3 visits → Abandoned</text>
+<rect x="940" y="110" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="998" y="131.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">CliAudit</text>
+<text x="940" y="158" text-anchor="start" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="rgba(12,20,16,0.72)">≤ 4 visits → Abandoned</text>
+<rect x="1122" y="70" width="116" height="34" rx="8" fill="#b9d9c6" stroke="#0c1410" stroke-width="1.7"/>
+<text x="1180" y="91.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#0c1410">Document</text>
+<rect x="1304" y="30" width="116" height="34" rx="17" fill="#0c1410" stroke="#0c1410" stroke-width="1.7"/>
+<text x="1362" y="51.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#b9d9c6">Shipped</text>
+<rect x="1304" y="110" width="116" height="34" rx="17" fill="#0c1410" stroke="#0c1410" stroke-width="1.7"/>
+<text x="1362" y="131.5" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="700" fill="#b9d9c6">Abandoned</text>
+</svg>

@@ -1,0 +1,63 @@
+# Dependencies and build output ----------------------------------------
+# `package-lock.json` is deliberately NOT here: the Electron binary and the
+# native toolchain are version-sensitive enough that the lock file is part of
+# the repo.
+node_modules/
+dist/
+
+# If a packaging step is ever added, its output lands in one of these.
+out/
+release/
+*.asar
+
+# Caches from the toolchain
+.vite/
+*.tsbuildinfo
+.eslintcache
+
+# NOTE: `build/` is NOT ignored. It holds the app icon the main process loads
+# at startup, so despite the name it is a source folder, not build output.
+
+# Secrets ---------------------------------------------------------------
+# API keys are kept in the OS user-data folder, never in the repo. These are
+# here so a stray local override cannot be committed by accident.
+.env
+.env.*
+*.pem
+
+# Runtime state ---------------------------------------------------------
+# A project's sessions and run history live inside its own workspace folder.
+# This only matters if someone points a project at this repo, which is easy to
+# do by accident and messy to undo.
+.orcrist-agent/
+
+# Screenshots -----------------------------------------------------------
+# The raw captures are the working material: seven full-screen retina PNGs,
+# around 28 MB, of which the repo needs none. The two cropped images the
+# documentation actually shows are `session.png` and `settings.png`, and they
+# stay tracked.
+screens/Screenshot*.png
+screens/Schermata*.png
+
+# Generated brand assets are tracked on purpose: a reader cloning the repo for
+# the documentation should not have to run `brand/build.py` (and install
+# fonttools) to see the logo. Only Python's own leavings are ignored.
+__pycache__/
+*.py[cod]
+
+# Editors and operating systems -----------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# Logs ------------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-error.log*

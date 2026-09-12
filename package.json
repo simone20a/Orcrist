@@ -1,0 +1,33 @@
+{
+  "name": "orcrist-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A GUI coding agent whose runs are structured as Orcrist finite state machines",
+  "main": "dist/main/electron/main.js",
+  "scripts": {
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:renderer": "vite build",
+    "build": "npm run build:main && npm run build:renderer",
+    "start": "npm run build && electron .",
+    "dev": "concurrently -k -n vite,electron -c cyan,magenta \"vite\" \"npm run dev:electron\"",
+    "dev:electron": "wait-on tcp:5173 && npm run build:main && cross-env ORCRIST_DEV_SERVER=http://localhost:5173 electron .",
+    "test": "npm run build:main && node dist/main/scripts/selftest.js",
+    "fix:electron": "node node_modules/electron/install.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "^33.3.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "wait-on": "^8.0.1"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
