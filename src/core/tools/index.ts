@@ -7,6 +7,7 @@
  * `writes` clause by the executor, since its schema depends on the model.
  */
 
+import { origin, transportReason } from '../net';
 import { exec } from 'node:child_process';
 import { constants } from 'node:fs';
 import {
@@ -289,9 +290,17 @@ const webFetch: AgentTool = {
     if (!ctx.settings.enableWeb) throw new ToolError('Web tools are disabled in Settings.');
     const url = str(args, 'url');
     if (!/^https?:\/\//i.test(url)) throw new ToolError('url must start with http:// or https://');
+    // A request that never left the machine arrives as the bare string "fetch
+    // failed", and this one is read by the model: it has to be able to tell an
+    // unreachable host from a page that answered badly.
     const res = await fetch(url, {
       headers: { 'user-agent': 'Mozilla/5.0 (compatible; OrcristAgent/0.1)' },
       redirect: 'follow',
+    }).catch((e: unknown) => {
+      const reason = transportReason(e);
+      throw new ToolError(
+        reason ? `Could not reach ${origin(url)}: ${reason}` : `${(e as Error).message}`,
+      );
     });
     const ct = res.headers.get('content-type') ?? '';
     const body = await res.text();
@@ -325,6 +334,13 @@ const webSearch: AgentTool = {
         'user-agent': 'Mozilla/5.0 (compatible; OrcristAgent/0.1)',
       },
       body: new URLSearchParams({ q: query }),
+    }).catch((e: unknown) => {
+      const reason = transportReason(e);
+      throw new ToolError(
+        reason
+          ? `Could not reach the search backend at html.duckduckgo.com: ${reason}`
+          : `${(e as Error).message}`,
+      );
     });
     if (!res.ok) throw new ToolError(`search backend returned HTTP ${res.status}`);
     const html = await res.text();

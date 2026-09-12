@@ -1,4 +1,4 @@
-import { LlmError, type LlmProvider, type LlmRequest, type LlmResponse, type ProviderCredentials } from './types';
+import { LlmError, transportError, type LlmProvider, type LlmRequest, type LlmResponse, type ProviderCredentials } from './types';
 
 interface AnthropicBlock {
   type: string;
@@ -77,12 +77,13 @@ export function anthropicProvider(creds: ProviderCredentials): LlmProvider {
       };
       headers['x-api-key'] = creds.apiKey;
 
-      const res = await fetch(`${baseUrl}/v1/messages`, {
+      const url = `${baseUrl}/v1/messages`;
+      const res = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(body),
         signal: req.signal,
-      });
+      }).catch((e: unknown) => transportError(e, 'Anthropic', url));
       if (!res.ok) {
         throw new LlmError(`Anthropic ${res.status}: ${await res.text()}`, res.status, 'anthropic');
       }

@@ -1,3 +1,4 @@
+import { isAbort, origin, transportReason } from '../net';
 /** Provider-neutral chat + tool-calling interface. */
 
 export type ProviderId = 'anthropic' | 'openai' | 'ollama';
@@ -74,4 +75,19 @@ export class LlmError extends Error {
     super(message);
     this.name = 'LlmError';
   }
+}
+
+/**
+ * A transport failure, rethrown as something a user can act on: which provider,
+ * which address, and what actually went wrong. See ../net.ts for the unwrapping
+ * — the web tools need the same explanation, so it lives in one place.
+ *
+ * Cancelling a run comes through here too and must pass untouched: an
+ * AbortError is the user pressing Stop, not a network fault.
+ */
+export function transportError(e: unknown, provider: string, url: string): never {
+  if (isAbort(e)) throw e;
+  if (e instanceof LlmError) throw e;
+  const reason = transportReason(e) ?? (e instanceof Error ? e.message : String(e));
+  throw new LlmError(`Could not reach ${provider} at ${origin(url)}: ${reason}`, undefined, provider);
 }

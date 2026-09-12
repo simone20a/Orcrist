@@ -1,4 +1,4 @@
-import { LlmError, type LlmMessage, type LlmProvider, type LlmRequest, type LlmResponse, type ProviderCredentials, type ToolCall } from './types';
+import { LlmError, transportError, type LlmMessage, type LlmProvider, type LlmRequest, type LlmResponse, type ProviderCredentials, type ToolCall } from './types';
 
 /**
  * OpenAI, over two endpoints.
@@ -173,7 +173,9 @@ async function postWithParamDrop(
 ): Promise<Attempt> {
   const dropped: string[] = [];
   for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal });
+    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal }).catch(
+      (e: unknown) => transportError(e, 'OpenAI', url),
+    );
     if (res.ok) {
       return { ok: true, status: res.status, text: '', res, note: '' };
     }

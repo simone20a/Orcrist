@@ -1,4 +1,4 @@
-import { LlmError, type LlmProvider, type LlmRequest, type LlmResponse, type ProviderCredentials } from './types';
+import { LlmError, transportError, type LlmProvider, type LlmRequest, type LlmResponse, type ProviderCredentials } from './types';
 
 /**
  * Local models through Ollama's /api/chat. Tool-calling works only with models
@@ -40,23 +40,13 @@ export function ollamaProvider(creds: ProviderCredentials): LlmProvider {
         }));
       }
 
-      let res: Response;
-      try {
-        res = await fetch(`${baseUrl}/api/chat`, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(body),
-          signal: req.signal,
-        });
-      } catch (e) {
-        // A cancelled run is not an unreachable Ollama: let it through as-is.
-        if ((e as Error).name === 'AbortError') throw e;
-        throw new LlmError(
-          `Could not reach Ollama at ${baseUrl}. Is \`ollama serve\` running? (${(e as Error).message})`,
-          undefined,
-          'ollama',
-        );
-      }
+      const url = `${baseUrl}/api/chat`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: req.signal,
+      }).catch((e: unknown) => transportError(e, 'Ollama', url));
       if (!res.ok) {
         throw new LlmError(`Ollama ${res.status}: ${await res.text()}`, res.status, 'ollama');
       }
@@ -95,13 +85,9 @@ export async function listOllamaModels(baseUrl?: string): Promise<string[]> {
   // a text field a user can empty — which produced `fetch('/api/tags')` and a
   // "failed to parse URL" where the honest answer was "you cleared the box".
   const root = (baseUrl ?? '').trim().replace(/\/+$/, '') || 'http://localhost:11434';
-  const res = await fetch(`${root}/api/tags`).catch((e: unknown) => {
-    throw new LlmError(
-      `could not reach Ollama at ${root}: ${(e as Error).message}`,
-      undefined,
-      'ollama',
-    );
-  });
+  const res = await fetch(`${root}/api/tags`).catch((e: unknown) =>
+    transportError(e, 'Ollama', `${root}/api/tags`),
+  );
   if (!res.ok) throw new LlmError(`Ollama ${res.status}: ${await res.text()}`, res.status, 'ollama');
   const json = (await res.json()) as { models?: { name: string }[] };
   return (json.models ?? []).map((m) => m.name);

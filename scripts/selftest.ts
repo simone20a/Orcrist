@@ -319,7 +319,8 @@ if (checked.errors.length) {
         .then(openaiResponsesFallbackCheck)
         .then(cancellationCheck)
         .then(observationCheck)
-        .then(toolListCheck);
+        .then(toolListCheck)
+        .then(networkErrorCheck);
     })
     .then(finish)
     .catch((e: unknown) => {
@@ -746,5 +747,88 @@ async function toolListCheck(): Promise<void> {
     bad('a run with no machine says nothing about the store', '    report_state_writes leaked in');
   } else {
     ok('a run with no machine says nothing about the store');
+  }
+}
+
+// --- 9. what a failed request says -------------------------------------
+
+/**
+ * "fetch failed" is what Node says when a request never left the machine, and
+ * on its own it cannot tell an unplugged Ollama from a typo in a base URL. The
+ * cause has to reach the transcript, and cancelling has to stay distinguishable
+ * from a fault.
+ */
+async function networkErrorCheck(): Promise<void> {
+  console.log('\nA request that cannot be made says why');
+
+  const { anthropicProvider } = await import('../src/core/llm/anthropic');
+  const { openaiProvider } = await import('../src/core/llm/openai');
+  const { ollamaProvider } = await import('../src/core/llm/ollama');
+
+  const req = { model: 'm', system: 's', messages: [{ role: 'user' as const, content: 'hi' }], tools: [] };
+  const closed = 'http://127.0.0.1:59997';
+
+  const cases: [string, () => Promise<unknown>][] = [
+    ['Anthropic', () => anthropicProvider({ apiKey: 'k', baseUrl: closed }).complete(req)],
+    ['OpenAI', () => openaiProvider({ apiKey: 'k', baseUrl: `${closed}/v1` }).complete(req)],
+    ['Ollama', () => ollamaProvider({ baseUrl: closed }).complete(req)],
+  ];
+
+  for (const [name, run] of cases) {
+    try {
+      await run();
+      bad(`${name}: unreachable host reported`, '    the call did not fail at all');
+    } catch (e) {
+      const msg = (e as Error).message;
+      if (/^fetch failed$/i.test(msg)) {
+        bad(`${name}: unreachable host reported`, '    still the bare "fetch failed"');
+      } else if (!msg.includes(name) || !msg.includes('127.0.0.1')) {
+        bad(`${name}: unreachable host reported`, `    does not name the provider and the address: ${msg}`);
+      } else if (!msg.includes('ECONNREFUSED')) {
+        bad(`${name}: unreachable host reported`, `    does not carry the cause: ${msg}`);
+      } else {
+        ok(`${name}: unreachable host reported`, msg.slice(0, 72));
+      }
+    }
+  }
+
+  // The same failure through a tool, which is the other place it surfaces —
+  // and there the reader is the model, deciding whether to try another way.
+  const { buildTools } = await import('../src/core/tools');
+  const { DEFAULT_SETTINGS } = await import('../src/core/types');
+  const settings = { ...DEFAULT_SETTINGS, enableWeb: true };
+  const webFetch = buildTools(settings).find((t) => t.def.name === 'web_fetch');
+  if (!webFetch) {
+    bad('web_fetch: unreachable host reported', '    the tool is not in the toolset');
+  } else {
+    try {
+      await webFetch.run(
+        { url: `${closed}/page` },
+        { workspace: '/tmp', settings } as unknown as Parameters<typeof webFetch.run>[1],
+      );
+      bad('web_fetch: unreachable host reported', '    the call did not fail at all');
+    } catch (e) {
+      const msg = (e as Error).message;
+      if (/fetch failed/i.test(msg)) {
+        bad('web_fetch: unreachable host reported', '    still the bare "fetch failed"');
+      } else if (!msg.includes('ECONNREFUSED') || !msg.includes('127.0.0.1')) {
+        bad('web_fetch: unreachable host reported', `    ${msg}`);
+      } else {
+        ok('web_fetch: unreachable host reported', msg.slice(0, 72));
+      }
+    }
+  }
+
+  // Stop must not be rewritten into a network fault: the run ends cancelled,
+  // and that distinction is what keeps the log honest.
+  const c = new AbortController();
+  c.abort();
+  try {
+    await ollamaProvider({ baseUrl: closed }).complete({ ...req, signal: c.signal });
+    bad('cancelling stays an abort', '    the aborted call did not throw');
+  } catch (e) {
+    const err = e as Error;
+    if (err.name === 'AbortError') ok('cancelling stays an abort', 'AbortError, not a transport error');
+    else bad('cancelling stays an abort', `    got ${err.name}: ${err.message}`);
   }
 }
